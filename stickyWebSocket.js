@@ -13,7 +13,7 @@
 function stickyWebSocket(url, protocols) {
   this.debug = false;
   this.timeout = 10;
-  this.fixedDelay = 2; // f - this is a random name, might be totally wrong too
+  this.fixedDelay = 2;
   this.retries = 0;
   this.maxDelay = 30000;
   this.onopen = function(e){};
@@ -28,30 +28,30 @@ function stickyWebSocket(url, protocols) {
 
   this.send = function(data) {
     logDebug("SWS - sending data");
-    return sws.send(data);
+    return ws.send(data);
   };
 
   this.close = function(){
     logDebug("SWS - closing, tata bye bye!");
     closed = true;
     ws.close();
-  }
+  };
 
   function logDebug(message){
     if(sws.debug)
       console.log(message);
-  };
+  }
 
   // http://dthain.blogspot.nl/2009/02/exponential-backoff-in-distributed.html
   // using an exponential backoff algorithm to try to reconnect to the server
   function getDelay(){
     var r = (Math.random()*2); // random number 1-2
-    var delay = r*sws.t*Math.pow(sws.f,sws.n);
-    sws.n++;
-    if(delay > sws.m)
-      return sws.m;
-    return delay
-  };
+    var delay = r*sws.timeout*Math.pow(sws.fixedDelay,sws.retries);
+    sws.retries++;
+    if(delay > sws.maxDelay)
+      return sws.maxDelay;
+    return delay;
+  }
 
   function init(){
     logDebug("SWS - attempting to connect");
@@ -87,7 +87,7 @@ function stickyWebSocket(url, protocols) {
     ws.onerror = function(e){
       logDebug("SWS - whoopsie error");
       sws.onerror(e);
-    }
-  };
+    };
+  }
   init();
-};
+}
