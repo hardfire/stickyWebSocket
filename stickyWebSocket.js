@@ -20,6 +20,7 @@ function stickyWebSocket(url, protocols) {
   this.onclose = function(e){};
   this.onconnecting = function(e){};
   this.onerror = function(e){};
+  this.onmessage = function(e){};
 
   var closed = false;
   var ws;
@@ -56,6 +57,8 @@ function stickyWebSocket(url, protocols) {
   function init(){
     logDebug("SWS - attempting to connect");
     ws = new WebSocket(url, protocols);
+    sws.readystate = ws.readystate;
+
 
     ws.onopen = function(e){
       logDebug("SWS - connected yay!");
